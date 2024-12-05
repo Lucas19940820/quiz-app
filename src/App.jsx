@@ -1,35 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import Question from './components/Question';
+import SearchBar from './components/SearchBar';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const questions = [
+    {
+      question: "What is the capital of France?",
+      options: ["Paris", "London", "Berlin", "Madrid"],
+      correct: "Paris",
+    },
+    {
+      question: "Which programming language is used for web apps?",
+      options: ["Python", "JavaScript", "C++", "Ruby"],
+      correct: "JavaScript",
+    },
+  ];
+
+  const filteredQuestions = questions.filter((q) =>
+    q.question.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAnswer = (selectedOption) => {
+    if (selectedOption === filteredQuestions[currentQuestion].correct) {
+      alert("Correct!");
+    } else {
+      alert("Try Again!");
+    }
+
+    // Move to the next question
+    setCurrentQuestion((prev) => (prev + 1) % filteredQuestions.length);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <h1>Quiz App</h1>
+      <SearchBar onSearch={setSearchTerm} />
+      {filteredQuestions.length > 0 ? (
+        <Question
+          question={filteredQuestions[currentQuestion].question}
+          options={filteredQuestions[currentQuestion].options}
+          onAnswer={handleAnswer}
+        />
+      ) : (
+        <p>No questions match your search.</p>
+      )}
+    </div>
+  );
+};
 
-export default App
+export default App;
